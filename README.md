@@ -8,7 +8,7 @@ Load testing tool to stress MQTT message broker
 $ mkdir -p ${GOPATH}/src/github.com/inovex/
 $ git clone https://github.com/inovex/mqtt-stresser.git ${GOPATH}/src/github.com/inovex/mqtt-stresser/
 $ cd ${GOPATH}/src/github.com/inovex/mqtt-stresser/
-$ make
+$ make linux
 ```
 
 This will build the mqtt stresser for all target platforms and write them to the ``build/`` directory.
