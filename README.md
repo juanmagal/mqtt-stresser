@@ -13,8 +13,6 @@ $ make linux
 
 This will build the mqtt stresser for all target platforms and write them to the ``build/`` directory.
 
-Binaries are provided on Github, see https://github.com/inovex/mqtt-stresser.
-
 If you want to build the Docker container version of this, go to repository directory and simply type ``docker build .``
 
 ## Install
