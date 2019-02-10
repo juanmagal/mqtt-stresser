@@ -84,7 +84,7 @@ Median: 23076 msg/sec
   < 227557 msg/sec  97%
   < 283090 msg/sec  99%
   < 310857 msg/sec  100%
-
+```
 If using container, 
 ```
 $ docker run inovex/mqtt-stresser -broker tcp://broker.mqttdashboard.com:1883 -num-clients 100 -num-messages 10 -rampup-delay 1s -rampup-size 10 -global-timeout 180s -timeout 20s
