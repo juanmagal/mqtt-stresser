@@ -46,6 +46,8 @@ var (
 	argPublisherQoS        = flag.Int("publisher-qos", 0, "QoS level of published messages")
 	argSubscriberQoS       = flag.Int("subscriber-qos", 0, " QoS level for the subscriber")
 	argSkipTLSVerification = flag.Bool("skip-tls-verification", false, "skip the tls verfication of the MQTT Connection")
+        argTopic               = flag.String("topic", "", "Topic")
+        argSenMlFormat         = flag.Bool("senml", false, "Messages sent in SenML format")
 )
 
 type Result struct {
@@ -99,6 +101,7 @@ func main() {
 	num := *argNumMessages
 	username := *argUsername
 	password := *argPassword
+        topic := *argTopic
 	actionTimeout, err := time.ParseDuration(*argTimeout)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Could not parse '--timeout': '%s' is not a valid duration string. See https://golang.org/pkg/time/#ParseDuration for valid duration strings\n", *argGlobalTimeout)
@@ -176,12 +179,14 @@ func main() {
 			BrokerUrl:           *argBrokerUrl,
 			Username:            username,
 			Password:            password,
+                        Topic:               topic,
 			SkipTLSVerification: *argSkipTLSVerification,
 			NumberOfMessages:    num,
 			Timeout:             actionTimeout,
 			Retained:            *argRetain,
 			PublisherQoS:        publisherQoS,
 			SubscriberQoS:       subscriberQoS,
+                        FormatWithSenMl:     *argSenMlFormat,
 		}).Run(testCtx)
 	}
 	fmt.Printf("%d worker started\n", *argNumClients)

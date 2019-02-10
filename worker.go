@@ -5,6 +5,10 @@ import (
 	"fmt"
 	"os"
 	"time"
+        "math"
+        "math/rand"
+
+	senml "github.com/cisco/senml"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
@@ -14,12 +18,14 @@ type Worker struct {
 	BrokerUrl           string
 	Username            string
 	Password            string
+        Topic               string
 	SkipTLSVerification bool
 	NumberOfMessages    int
 	Timeout             time.Duration
 	Retained            bool
 	PublisherQoS        byte
 	SubscriberQoS       byte
+        FormatWithSenMl     bool
 }
 
 func setSkipTLS(o *mqtt.ClientOptions) {
@@ -40,7 +46,10 @@ func (w *Worker) Run(ctx context.Context) {
 		panic(err)
 	}
 
-	topicName := fmt.Sprintf(topicNameTemplate, hostname, w.WorkerId, t)
+        topicName := w.Topic
+        if topicName == "" {
+	        topicName = fmt.Sprintf(topicNameTemplate, hostname, w.WorkerId, t)
+        }
 	subscriberClientId := fmt.Sprintf(subscriberClientIdTemplate, hostname, w.WorkerId, t)
 	publisherClientId := fmt.Sprintf(publisherClientIdTemplate, hostname, w.WorkerId, t)
 
@@ -119,7 +128,23 @@ func (w *Worker) Run(ctx context.Context) {
 
 	t0 := time.Now()
 	for i := 0; i < w.NumberOfMessages; i++ {
-		text := fmt.Sprintf("this is msg #%d!", i)
+                text := ""
+                if w.FormatWithSenMl {
+	                readings := []senml.SenMLRecord{}
+                        reading := senml.SenMLRecord{}
+                        reading.Name = fmt.Sprintf("device#%d", i)
+                        reading.Unit = "Cel"
+                        value := float64(i)*rand.Float64()
+                        valueRound := math.Round(value*100)/100
+                        reading.Value = &valueRound
+                        readings = append(readings, reading)
+                        msg := senml.SenML{}
+                        msg.Records = readings
+                        dataOut,_ := senml.Encode(msg, senml.JSON, senml.OutputOptions{})
+                        text = (string(dataOut))
+                } else {
+		        text = fmt.Sprintf("this is msg #%d!", i)
+                }
 		token := publisher.Publish(topicName, w.PublisherQoS, w.Retained, text)
 		publishedCount++
 		token.WaitTimeout(w.Timeout)
