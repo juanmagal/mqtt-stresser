@@ -48,6 +48,8 @@ var (
 	argSkipTLSVerification = flag.Bool("skip-tls-verification", false, "skip the tls verfication of the MQTT Connection")
         argTopic               = flag.String("topic", "", "Topic")
         argSenMlFormat         = flag.Bool("senml", false, "Messages sent in SenML format")
+        argSenMlDeviceName     = flag.String("senmldevicename","device","Device name")
+        argSenMlMeasure        = flag.String("senmlmeasure","temperature","Measure used (e.g. temperature)")
 )
 
 type Result struct {
@@ -187,6 +189,8 @@ func main() {
 			PublisherQoS:        publisherQoS,
 			SubscriberQoS:       subscriberQoS,
                         FormatWithSenMl:     *argSenMlFormat,
+                        DeviceName:          *argSenMlDeviceName,
+                        Measure:             *argSenMlMeasure,
 		}).Run(testCtx)
 	}
 	fmt.Printf("%d worker started\n", *argNumClients)

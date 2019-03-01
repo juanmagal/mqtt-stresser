@@ -26,6 +26,8 @@ type Worker struct {
 	PublisherQoS        byte
 	SubscriberQoS       byte
         FormatWithSenMl     bool
+        DeviceName          string
+        Measure             string
 }
 
 func setSkipTLS(o *mqtt.ClientOptions) {
@@ -132,7 +134,8 @@ func (w *Worker) Run(ctx context.Context) {
                 if w.FormatWithSenMl {
 	                readings := []senml.SenMLRecord{}
                         reading := senml.SenMLRecord{}
-                        reading.Name = fmt.Sprintf("device#%d", i)
+                        reading.BaseName = fmt.Sprintf(w.DeviceName+"%d", i)
+                        reading.Name =  w.Measure
                         reading.Unit = "Cel"
                         value := float64(i)*rand.Float64()
                         valueRound := math.Round(value*100)/100
